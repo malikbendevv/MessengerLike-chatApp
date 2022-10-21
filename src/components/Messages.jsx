@@ -3,7 +3,7 @@ import React from "react";
 import Message from "./Message";
 const Messages = () => {
   return (
-    <Stack backgroundColor="#ddddf7" p="10px" height="100%">
+    <Stack backgroundColor="#ddddf7" p="10px" height="100%" overflow="scroll">
       <Message />
       <Message />
       <Message />
