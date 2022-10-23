@@ -2,7 +2,8 @@ import React from "react";
 
 import { Box, Stack, Typography } from "@mui/material";
 
-const Message = () => {
+const Message = ({ message }) => {
+  console.log("message", message);
   return (
     <Stack
       direction="row"

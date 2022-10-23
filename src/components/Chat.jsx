@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { VideoCall, PersonAddAlt, MoreHoriz } from "@mui/icons-material";
 import Messages from "./Messages";
+import { ChatContext } from "../Context/ChatContext";
+
 import Input from "./Input";
 const Chat = () => {
+  const { dispatch } = useContext(ChatContext);
+  const { data } = useContext(ChatContext);
+
   return (
     <Box
       sx={{
@@ -20,7 +25,7 @@ const Chat = () => {
       >
         <Typography variant="body2" color="white" pl="5px">
           {" "}
-          Jane
+          {data.user.displayName}
         </Typography>
         <Stack direction="row" spacing={1} pr="7px">
           <VideoCall sx={{ color: "white" }} />
