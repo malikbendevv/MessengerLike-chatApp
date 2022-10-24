@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useContext, useRef, useEffect } from "react";
 
 import { Box, Stack, Typography } from "@mui/material";
+import { ChatContext } from "../Context/ChatContext";
+import { AuthContext } from "../Context/AuthContext";
 
 const Message = ({ message }) => {
+  const { currentUser } = useContext(AuthContext);
+  const { data } = useContext(ChatContext);
+
+  const ref = useRef();
+  // useEffect
+  useEffect(() => {
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  }, [message]);
   console.log("message", message);
   return (
     <Stack
-      direction="row"
+      direction={currentUser.uid === message?.sendId ? "row" : "row-reverse"}
       alignItems="start"
-      justifyContent="flex-end"
+      justifyContent={
+        currentUser.uid === message?.sendId ? "flex-end" : "flex-start"
+      }
       spacing={2}
     >
       <Box sx={{ display: "flex", flexDirection: "column", marginTop: "15px" }}>
@@ -27,13 +39,13 @@ const Message = ({ message }) => {
           }}
         >
           {" "}
-          Hello
+          {message.text}{" "}
         </Typography>
-        <img
+        {/* <img
           className=" ImageSent"
           src="https://images.pexels.com/photos/10272672/pexels-photo-10272672.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
           alt=""
-        />
+        /> */}
       </Box>
       <Box sx={{}}>
         <img

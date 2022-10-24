@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { IconButton, Paper, Box } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import {
@@ -13,11 +13,14 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db, auth } from "../Config";
+import { AuthContext } from "../Context/AuthContext";
 
 const Searche = () => {
   const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
+  const { currentUser } = useContext(AuthContext);
+  const currentUserUid = currentUser.uid;
 
   const onSubmit = async () => {
     const q = query(
@@ -42,9 +45,9 @@ const Searche = () => {
     console.log("1");
     console.log(user);
     const combinedId =
-      auth.currentUser.uid > user.uid
-        ? auth.currentUser.uid + user.uid
-        : user.uid + auth.currentUser.uid;
+      currentUserUid > user.uid
+        ? currentUserUid + user.uid
+        : user.uid + currentUserUid;
     console.log("2");
     console.log(combinedId);
     try {
@@ -56,30 +59,30 @@ const Searche = () => {
         await setDoc(doc(db, "chats", combinedId), { messages: [] });
 
         console.log("5");
-
+        console.log("user", user);
         // create user chat
-        await updateDoc(doc(db, "userChats", user.uid), {
-          [combinedId + ".userInfo"]: {
-            uid: user.uid,
-            displayName: user.displayName,
-          },
-          [combinedId + ".date"]: serverTimestamp(),
-        });
-        console.log("6");
-
-        await updateDoc(doc(db, "userChats", auth.currentUser.uid), {
-          [combinedId + ".userInfo"]: {
-            uid: auth.currentUser.uid,
-            displayName: auth.currentUser.displayName,
-          },
-          [combinedId + ".date"]: serverTimestamp(),
-        });
       }
+      await updateDoc(doc(db, "userChats", currentUserUid), {
+        [combinedId + ".userInfo"]: {
+          uid: user.uid,
+          displayName: user.displayName,
+        },
+        [combinedId + ".date"]: serverTimestamp(),
+      });
+      console.log("6");
+
+      await updateDoc(doc(db, "userChats", user.uid), {
+        [combinedId + ".userInfo"]: {
+          uid: currentUserUid,
+          displayName: currentUser.displayName,
+        },
+        [combinedId + ".date"]: serverTimestamp(),
+      });
     } catch (err) {
       console.log(err);
-      setUser(null);
-      setUsername("");
     }
+    setUser(null);
+    setUsername("");
   };
 
   return (

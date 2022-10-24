@@ -23,8 +23,7 @@ const Login = () => {
         displayName: user.displayName,
         uid: user.uid,
       });
-      await setDoc(doc(db, "userChats", user.uid), {});
-
+      await setDoc(doc(db, "userChat", user.uid), { messages: [] });
       navigate("/home");
     } catch (err) {
       console.log(err);

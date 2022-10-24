@@ -8,9 +8,9 @@ import { db } from "../Config";
 const Messages = () => {
   const [messages, setMessages] = useState([]);
   const { data } = useContext(ChatContext);
-  console.log("conetxt data", data);
   useEffect(() => {
     const UnSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
+      console.log(doc.data());
       doc.exists() && setMessages(doc.data().messages);
       console.log(doc.data());
     });

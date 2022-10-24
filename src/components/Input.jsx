@@ -1,17 +1,51 @@
 import React, { useState, useContext } from "react";
 import { Box, Button, Stack, TextField } from "@mui/material";
 import { AttachFile, Image } from "@mui/icons-material";
-import { auth } from "../Config";
+import { auth, db } from "../Config";
 import { ChatContext } from "../Context/ChatContext";
+import {
+  arrayUnion,
+  updateDoc,
+  doc,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
+import { v4 as uuid } from "uuid";
+import { AuthContext } from "../Context/AuthContext";
 
 const Input = () => {
   const [text, setText] = useState("");
   const [img, setImg] = useState("");
 
-  const currentUserUid = auth?.currentUser?.uid;
-  const { dispatch } = useContext(ChatContext);
+  const { data } = useContext(ChatContext);
+  const { currentUser } = useContext(AuthContext);
+  const currentUserUid = currentUser.uid;
 
-  const handleSend = () => {};
+  const handleSend = async () => {
+    console.log("chat Id", data.chatId);
+    if (img) {
+    } else {
+      await updateDoc(doc(db, "chats", data.chatId), {
+        messages: arrayUnion({
+          id: uuid(),
+          text,
+          sendId: currentUserUid,
+          date: Timestamp.now(),
+        }),
+      });
+    }
+
+    await updateDoc(doc(db, "userChats", currentUserUid), {
+      [data.chatId + ".lastMessage"]: { text },
+      [data.chatId + ".date"]: serverTimestamp(),
+    });
+    await updateDoc(doc(db, "userChats", data.user.uid), {
+      [data.chatId + ".lastMessage"]: { text },
+      [data.chatId + ".date"]: serverTimestamp(),
+    });
+    setText("");
+    setImg(null);
+  };
 
   return (
     <Box
